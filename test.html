@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment and Rating</title>
+</head>
+<body>
+
+<!-- Rating Section -->
+<h2>Rating Section</h2>
+<table id="ratingTable">
+    <tr>
+        <td onclick="rate(1)">1</td>
+        <td onclick="rate(2)">2</td>
+        <td onclick="rate(3)">3</td>
+        <td onclick="rate(4)">4</td>
+        <td onclick="rate(5)">5</td>
+        <td onclick="rate(6)">6</td>
+        <td onclick="rate(7)">7</td>
+        <td onclick="rate(8)">8</td>
+        <td onclick="rate(9)">9</td>
+        <td onclick="rate(10)">10</td>
+    </tr>
+</table>
+
+<!-- Comment Section -->
+<div id="commentSection" style="display: none;">
+    <h2>Comment Section</h2>
+    <label for="nameInput">Your Name:</label>
+    <input type="text" id="nameInput" required>
+    <span style="color: red;"> *</span> <!-- Graphic indication that the field is required -->
+    <br>
+    <textarea id="commentInput" placeholder="Enter your comment"></textarea>
+    <button id="postCommentButton" onclick="postComment()" disabled>Post Comment</button>
+    <div id="commentsContainer"></div>
+</div>
+
+<script>
+    let selectedRating = 0;
+
+    function rate(rating) {
+        // Set the selected rating
+        selectedRating = rating;
+
+        // Show the comment section
+        document.getElementById('commentSection').style.display = 'block';
+
+        // Enable the postCommentButton
+        document.getElementById('postCommentButton').removeAttribute('disabled');
+    }
+
+    function postComment() {
+        // Get the name and comment from the inputs
+        const name = document.getElementById('nameInput').value;
+        const comment = document.getElementById('commentInput').value;
+
+        // Validate that a rating has been selected
+        if (selectedRating === 0) {
+            alert('Please select a rating before posting a comment.');
+            return;
+        }
+
+        // Validate that a name has been entered
+        if (!name) {
+            alert('Please enter your name before posting a comment.');
+            return;
+        }
+
+        // Create a new comment object
+        const commentObject = {
+            name: name,
+            rating: selectedRating,
+            comment: comment
+        };
+
+        // Save the comment to localStorage
+        saveComment(commentObject);
+
+        // Display the comments
+        displayComments();
+
+        // Clear the inputs
+        document.getElementById('nameInput').value = '';
+        document.getElementById('commentInput').value = '';
+
+        // Disable the postCommentButton
+        document.getElementById('postCommentButton').setAttribute('disabled', 'true');
+    }
+
+    function saveComment(commentObject) {
+        // Retrieve existing comments from localStorage
+        const existingComments = JSON.parse(localStorage.getItem('comments')) || [];
+
+        // Add the new comment to the array
+        existingComments.push(commentObject);
+
+        // Save the updated array back to localStorage
+        localStorage.setItem('comments', JSON.stringify(existingComments));
+    }
+
+    function displayComments() {
+        // Retrieve comments from localStorage
+        const comments = JSON.parse(localStorage.getItem('comments')) || [];
+
+        // Display comments in the commentsContainer
+        const commentsContainer = document.getElementById('commentsContainer');
+        commentsContainer.innerHTML = '';
+
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+            commentElement.innerHTML = `<strong>${comment.name}</strong> (Rating: ${comment.rating}): ${comment.comment}`;
+            commentsContainer.appendChild(commentElement);
+        });
+    }
+</script>
+
+<style>
+    #ratingTable {
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    #ratingTable td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    #ratingTable td:hover {
+        background-color: #f5f5f5;
+    }
+
+    #ratingTable td.selected {
+        background-color: #4CAF50;
+        color: white;
+    }
+</style>
+
+</body>
+</html>
+
+
